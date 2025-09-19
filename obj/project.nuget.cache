@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "lLOCrnXlHbA/t8MyWjuezaDf7H/fU2lZuHSbUKKiYSoKfd85sr1FHZcdr5aho/EWbvoXFxxVp5WcvSdeQ2XMuA==",
+  "success": true,
+  "projectFilePath": "/home/dms12/Documents/TaskManager/TaskManager.csproj",
+  "expectedPackageFiles": [
+    "/home/dms12/.nuget/packages/microsoft.data.sqlite/9.0.9/microsoft.data.sqlite.9.0.9.nupkg.sha512",
+    "/home/dms12/.nuget/packages/microsoft.data.sqlite.core/9.0.9/microsoft.data.sqlite.core.9.0.9.nupkg.sha512",
+    "/home/dms12/.nuget/packages/sqlitepclraw.bundle_e_sqlite3/2.1.10/sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
+    "/home/dms12/.nuget/packages/sqlitepclraw.core/2.1.10/sqlitepclraw.core.2.1.10.nupkg.sha512",
+    "/home/dms12/.nuget/packages/sqlitepclraw.lib.e_sqlite3/2.1.10/sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",
+    "/home/dms12/.nuget/packages/sqlitepclraw.provider.e_sqlite3/2.1.10/sqlitepclraw.provider.e_sqlite3.2.1.10.nupkg.sha512",
+    "/home/dms12/.nuget/packages/system.memory/4.5.3/system.memory.4.5.3.nupkg.sha512"
+  ],
+  "logs": []
+}
