@@ -10,7 +10,7 @@ namespace TaskManager
 {
     class Program
     {
-        const string ConnectionString = "Data Source = DataBase.db";
+        private const string connectionString = "Data Source = DataBase.db";
 
         public static void Main(string[] args)
         {
@@ -27,7 +27,6 @@ namespace TaskManager
                 switch (input)
                 {
                     case "0":
-                        HelpText();
                         break;
                     case "1":
                         AddTask();
@@ -46,7 +45,7 @@ namespace TaskManager
                         Console.WriteLine("\nExiting application...\n");
                         break;
                     default:
-                        Console.WriteLine("\nUser input invalid. For instructions type 0.");
+                        Console.WriteLine("\nUSE INPUT INVALID. FOR INSTRUCTIONS TYPE 0.");
                         break;
                 }
             }
@@ -54,7 +53,7 @@ namespace TaskManager
 
         public static void HelpText() // Prints initial text, with all the options available
         {
-            Console.WriteLine("\n---- TaskManager ----");
+            Console.WriteLine("\n---- TASKMANAGER ----");
             Console.WriteLine("1. Add Task");
             Console.WriteLine("2. Update Tasks");
             Console.WriteLine("3. View Tasks");
@@ -72,7 +71,7 @@ namespace TaskManager
                                                                               Description TEXT,
                                                                               IsCompleted INTEGER)";
 
-            using (SqliteConnection connection = new SqliteConnection(ConnectionString))
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
 
@@ -85,18 +84,36 @@ namespace TaskManager
 
 
 
-        public static void AddTask() // Adds a task to the database
+        public static int AddTask() // Adds a task to the database
         {
             string addTask = @"INSERT INTO Tasks (Title, Description, IsCompleted)
                                            VALUES (@TitleParam, @DescriptionParam, @IsCompletedParam)";
 
-            Console.Write("Title: ");
-            string? title = Console.ReadLine();
+            string? title;
+
+            while (true)
+            {
+                Console.Write("Title: ");
+                title = Console.ReadLine();
+
+                if (CheckTaskTitle(title) == true)
+                {
+                    Console.WriteLine("THIS TASK'S NAME IS ALREADY IN USE. PLEASE CHOOSE ANOTHER.");
+                }
+                else if (string.IsNullOrWhiteSpace(title))
+                {
+                    Console.WriteLine("Title cannot be empty.");
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             Console.Write("Description: ");
             string? description = Console.ReadLine();
 
-            using (SqliteConnection connection = new SqliteConnection(ConnectionString))
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
 
@@ -108,31 +125,120 @@ namespace TaskManager
 
                     command.ExecuteNonQuery();
 
-                    Console.WriteLine("\n---- New Task Added ----");
+                    Console.WriteLine("\n---- NEW TASK ADDED ----");
                     Console.WriteLine($"Title: {title}\nDescription: {description}");
+                }
+            }
+            return 0;
+        }
+
+
+
+        public static int UpdateTask() // Updates the condition of the task (turns the Is Completed to 1)
+        {
+            Console.Write("Which task do you want to update? ");
+            string? taskTitle = Console.ReadLine();
+
+            if (CheckTaskTitle(taskTitle) == false)
+            {
+                Console.WriteLine("INVALID TASK TITLE.");
+                return 1;
+            }
+
+            string updateTask = "Update Tasks SET IsCompleted = 1 WHERE Title = @TitleParam";
+
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqliteCommand command = new SqliteCommand(updateTask, connection))
+                {
+                    command.Parameters.AddWithValue("@TitleParam", taskTitle);
+
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine($"Task: {taskTitle} Updated");
+
+                }
+            }
+            return 0;
+        }
+
+        public static bool CheckTaskTitle(string? title) // Helps the other functions check the validity of the user input
+        {
+            string checkTasktitle = "SELECT EXISTS (SELECT 1 FROM Tasks WHERE Title = @TitleParam)";
+
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqliteCommand command = new SqliteCommand(checkTasktitle, connection))
+                {
+                    command.Parameters.AddWithValue("@TitleParam", title);
+
+                    object? result = command.ExecuteScalar();
+
+                    return Convert.ToBoolean(result);
                 }
             }
         }
 
 
 
-        public static void UpdateTask() // Updates the condition of the task (turns the Is Completed to 1)
-        {
-            Console.WriteLine("Update");
-        }
-
-
-
         public static void ViewTasks() // Prints all the tasks in the database
         {
-            Console.WriteLine("View");
+
+            string viewTasks = "SELECT Title, Description, IsCompleted FROM Tasks;";
+
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqliteCommand command = new SqliteCommand(viewTasks, connection))
+                {
+                    using (SqliteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Console.WriteLine($"\nTitle: {reader["Title"]}");
+                            Console.WriteLine($"Description: {reader["Description"]}");
+                            Console.WriteLine($"Is Completed: {((long) reader["IsCompleted"] == 1 ? "Yes" : "No")}\n");
+                        }
+                    }
+                }
+            }
         }
+        
 
 
 
-        public static void DeleteTasks() // Deletes task(s) from the database
+        public static int DeleteTasks() // Deletes task from the database
         {
-            Console.WriteLine("Delete");
+            Console.Write("Which task do you want to delete? ");
+            string? taskTitle = Console.ReadLine();
+
+            if (CheckTaskTitle(taskTitle) == false)
+            {
+                Console.WriteLine("INVALID TASK TITLE.");
+                return 1;
+            }
+
+            string deleteTasks = "DELETE FROM Tasks WHERE Title = @TitleParam";
+
+            using (SqliteConnection connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqliteCommand command = new SqliteCommand(deleteTasks, connection))
+                {
+                    command.Parameters.AddWithValue("@TitleParam", taskTitle);
+
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine($"The task {taskTitle} has been removed from the database.");
+                }
+            }
+            return 0;
         }
     }
 }
