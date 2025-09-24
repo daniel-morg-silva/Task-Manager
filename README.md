@@ -5,7 +5,7 @@ A simple command-line task manager built with C# and SQLite. This is a learning 
 ## Features
 - Creates a local SQLite database to store tasks.
 - Initialises a `Tasks` table with an ID, title, description, and completion status.
-- (Planned) Add, delete, update, and view tasks.
+- Add, delete, update, and view tasks.
 
 ## Purpose
 This project is part of my journey to learn C# and back-end development. The goal is to understand:
